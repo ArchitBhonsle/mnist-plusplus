@@ -1,16 +1,35 @@
-import { useEffect } from "react";
 import "./App.css";
-import { fetchDataset } from "./lib/dataset";
+import * as tf from "@tensorflow/tfjs";
+import { useDataset } from "./lib/dataset";
+import { useModel } from "./lib/model";
+import { useEffect, useState } from "react";
 
 function App() {
-  useEffect(() => {
-    (async () => {
-      console.log(await fetchDataset(false));
-      console.log(await fetchDataset(true));
-    })();
-  }, []);
+  const { dataset, loading: datasetLoading } = useDataset(true);
+  const { model, loading: modelLoading } = useModel("neuraljs");
+  const [accuracy, setAccuracy] = useState<number | undefined>();
 
-  return <></>;
+  useEffect(() => {
+    if (dataset && model) {
+      tf.tidy(() => {
+        const predLogits = model.predict(dataset.x) as tf.Tensor<tf.Rank>;
+        const crossentropy = tf.metrics.sparseCategoricalAccuracy(
+          dataset!.y,
+          predLogits
+        );
+        const sum = crossentropy.sum().dataSync();
+        const size = crossentropy.size;
+
+        setAccuracy((sum[0] / size) * 100);
+      });
+    }
+  }, [dataset, model]);
+
+  if (datasetLoading || modelLoading || !accuracy) {
+    return <div>Loading</div>;
+  }
+
+  return <div>Accuracy: {accuracy}%</div>;
 }
 
 export default App;

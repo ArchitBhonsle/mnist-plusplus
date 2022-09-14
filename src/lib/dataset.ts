@@ -1,4 +1,5 @@
 import * as tf from "@tensorflow/tfjs";
+import { useEffect, useState } from "react";
 
 type Dataset = {
   x: tf.Tensor;
@@ -13,15 +14,39 @@ const fetchRawData = async (name: string) => {
   return array;
 };
 
-export const fetchDataset = async (test: boolean) => {
+const fetchDataset = async (test: boolean) => {
   const type = test ? "test" : "train";
   const x = await fetchRawData(`${type}_x`);
   const y = await fetchRawData(`${type}_y`);
 
   const xLength = x.length / (28 * 28);
 
-  const xTensor = tf.tensor3d(x, [xLength, 28, 28], "float32");
+  const xTensor = tf.tensor3d(x, [xLength, 28, 28], "float32").div(255);
   const yTensor = tf.tensor1d(y, "int32");
 
   return { x: xTensor, y: yTensor } as Dataset;
+};
+
+type DatasetState = {
+  dataset: Dataset | undefined;
+  loading: boolean;
+};
+
+export const useDataset = (test: boolean) => {
+  const [datasetState, setDatasetState] = useState<DatasetState>({
+    dataset: undefined,
+    loading: true,
+  });
+
+  useEffect(() => {
+    (async () => {
+      const ds = await fetchDataset(test);
+      setDatasetState({
+        dataset: ds,
+        loading: false,
+      });
+    })();
+  }, []);
+
+  return datasetState;
 };
