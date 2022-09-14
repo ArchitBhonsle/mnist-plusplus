@@ -1,14 +1,16 @@
-import { useState } from 'react'
-import './App.css'
+import { useEffect } from "react";
+import "./App.css";
+import { fetchDataset } from "./lib/dataset";
 
 function App() {
-  const [count, setCount] = useState(0)
+  useEffect(() => {
+    (async () => {
+      console.log(await fetchDataset(false));
+      console.log(await fetchDataset(true));
+    })();
+  }, []);
 
-  return (
-    <button onClick={() => setCount((count) => count + 1)}>
-      count is {count}
-    </button>
-  )
+  return <></>;
 }
 
-export default App
+export default App;
