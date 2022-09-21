@@ -18,19 +18,30 @@ export const Canvas = ({ setImageData }: Props) => {
     }
   }, [canvas]);
 
-  const getPosition = (e: React.MouseEvent) => {
+  const getPosition = (e: React.MouseEvent | React.TouchEvent) => {
     x =
-      (e.clientX - canvas.current!.offsetLeft) *
+      e.type == "touchmove"
+        ? (e as React.TouchEvent).touches[0].clientX
+        : (e as React.MouseEvent).clientX;
+    y =
+      e.type == "touchmove"
+        ? (e as React.TouchEvent).touches[0].clientY
+        : (e as React.MouseEvent).clientY;
+
+    x =
+      (x - canvas.current!.offsetLeft) *
       (canvas.current!.width / canvas.current!.clientWidth);
     y =
-      (e.clientY - canvas.current!.offsetTop) *
+      (y - canvas.current!.offsetTop) *
       (canvas.current!.height / canvas.current!.clientHeight);
   };
-  const start = (e: any) => {
+
+  const start = (e: React.MouseEvent | React.TouchEvent) => {
     draw = true;
     getPosition(e);
   };
-  const end = (_e: any) => {
+
+  const end = (_e: React.MouseEvent | React.TouchEvent) => {
     draw = false;
 
     let ctx = canvas.current?.getContext("2d");
@@ -39,7 +50,8 @@ export const Canvas = ({ setImageData }: Props) => {
     let image = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     setImageData(image);
   };
-  const move = (e: any) => {
+
+  const move = (e: React.MouseEvent | React.TouchEvent) => {
     if (!draw) return;
 
     let ctx = canvas.current?.getContext("2d");
@@ -65,11 +77,7 @@ export const Canvas = ({ setImageData }: Props) => {
   return (
     <>
       <canvas
-        style={{
-          // height: 280,
-          // aspectRatio: "1 / 1",
-          border: "2px solid black",
-        }}
+        className="border-2 border-black"
         ref={canvas}
         onMouseDown={start}
         onMouseUp={end}
@@ -79,6 +87,7 @@ export const Canvas = ({ setImageData }: Props) => {
         onTouchMove={move}
       />
       <button
+        className="rounded border-2 border-black"
         onClick={() => {
           clear();
           setImageData(null);

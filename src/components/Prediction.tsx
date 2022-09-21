@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useModel } from "../../lib/model";
+import { useModel } from "../lib/useModel";
 
 import * as tf from "@tensorflow/tfjs";
 import { Canvas } from "./Canvas";
@@ -42,14 +42,7 @@ export const Prediction = () => {
   }
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        gap: "1em",
-        textAlign: "center",
-      }}
-    >
+    <div className="flex flex-col gap-2 text-center">
       <div>
         <label htmlFor="modelName">Select the of model: </label>
         <select
@@ -64,9 +57,14 @@ export const Prediction = () => {
           ))}
         </select>
       </div>
-      <div>Draw on the canvas to see what the model predicts!</div>
+      <div>
+        {`${
+          inference
+            ? "It's a " + inference + "!"
+            : "Draw on the canvas to see what the model predicts!"
+        }`}
+      </div>
       <Canvas setImageData={setImageData} />
-      {inference && <div>It's a {inference}</div>}
     </div>
   );
 };

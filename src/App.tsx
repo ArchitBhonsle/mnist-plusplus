@@ -1,16 +1,10 @@
-import { Prediction } from "./components/Prediction/Prediction";
+import { Prediction } from "./components/Prediction";
 
 import "./App.css";
 
 function App() {
   return (
-    <div
-      style={{
-        padding: "1rem",
-        maxWidth: 560,
-        margin: "0 auto",
-      }}
-    >
+    <div className="p-5 max-w-md my-0 mx-auto">
       <Prediction />
     </div>
   );
