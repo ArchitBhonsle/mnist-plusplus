@@ -23,12 +23,13 @@ export const useModel = (name: string) => {
   useEffect(() => {
     (async () => {
       const model = await fetchModel(name);
+      console.log(name);
       setDatasetState({
         model,
         loading: false,
       });
     })();
-  }, []);
+  }, [name]);
 
   return datasetState;
 };

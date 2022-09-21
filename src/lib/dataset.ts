@@ -21,7 +21,7 @@ const fetchDataset = async (test: boolean) => {
 
   const xLength = x.length / (28 * 28);
 
-  const xTensor = tf.tensor3d(x, [xLength, 28, 28], "float32").div(255);
+  const xTensor = tf.tensor4d(x, [xLength, 28, 28, 1], "float32").div(255);
   const yTensor = tf.tensor1d(y, "int32");
 
   return { x: xTensor, y: yTensor } as Dataset;
